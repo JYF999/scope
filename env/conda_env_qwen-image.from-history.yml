@@ -1,0 +1,6 @@
+name: qwen-image
+channels:
+  - defaults
+dependencies:
+  - python=3.10
+prefix: /pfs/yufei/miniconda3/envs/qwen-image

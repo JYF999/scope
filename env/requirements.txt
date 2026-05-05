@@ -1,0 +1,8 @@
+accelerate
+deepspeed
+numpy
+requests
+torch
+transformers
+trl
+wandb

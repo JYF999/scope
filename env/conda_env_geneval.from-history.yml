@@ -1,0 +1,6 @@
+name: geneval
+channels:
+  - defaults
+dependencies:
+  - python=3.9
+prefix: /pfs/yufei/miniconda3/envs/geneval
