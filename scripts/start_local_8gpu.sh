@@ -26,7 +26,6 @@ export GRAD_ACC_STEPS="${GRAD_ACC_STEPS:-4}"
 export MAX_STEPS="${MAX_STEPS:-1250}"
 export REWARD_ENDPOINTS="${REWARD_ENDPOINTS:-http://127.0.0.1:5000}"
 export REWARD_TIMEOUT="${REWARD_TIMEOUT:-1800}"
-export WANDB_MODE="${WANDB_MODE:-disabled}"
 
 mkdir -p "${PROJECT_ROOT}/logs" "${OUT_DIR}"
 LOG_FILE="${PROJECT_ROOT}/logs/training_local_8gpu.log"

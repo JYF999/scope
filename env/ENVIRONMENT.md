@@ -1,36 +1,33 @@
-# FIPO（v37）conda 环境（/pfs/yufei/miniconda3/envs）
+# Conda 环境导出说明
 
-本目录脚本实际使用的 conda 环境与前缀路径如下（来自你机器现状）：
+本目录包含用于 **复现多服务训练** 的 Conda 环境导出文件（从一台已配置好的机器导出）。文件名表示用途，**不绑定**任何内部实验代号。
 
-- 训练/Reward：`/pfs/yufei/miniconda3/envs/reprompt_rl`
-- Image 服务：`/pfs/yufei/miniconda3/envs/qwen-image`
-- GenEval 服务：`/pfs/yufei/miniconda3/envs/geneval`
+## 文件列表
 
-为保证“详细且正确”，我已把这 3 个环境的 **完整导出** 放在本目录（可直接用于复现）：
+**完整导出（推荐用于复现）：**
 
-- `conda_env_reprompt_rl.yml`
-- `conda_env_qwen-image.yml`
-- `conda_env_geneval.yml`
+- `conda_env_reprompt_rl.yml` — 训练 / reward 客户端等  
+- `conda_env_qwen-image.yml` — 图像生成服务（示例环境名：`qwen-image`）  
+- `conda_env_geneval.yml` — GenEval 类评分服务  
 
-同时也导出了更短的 “from-history” 版本（通常不够完整，仅做参考）：
+**精简 from-history（依赖可能不完整，仅供参考）：**
 
-- `conda_env_reprompt_rl.from-history.yml`
-- `conda_env_qwen-image.from-history.yml`
-- `conda_env_geneval.from-history.yml`
+- `conda_env_reprompt_rl.from-history.yml`  
+- `conda_env_qwen-image.from-history.yml`  
+- `conda_env_geneval.from-history.yml`  
 
-## 用法（复现到新机器/新账号）
+## 在新机器上创建环境
 
-1) 拷贝这些 yml 到目标机器后执行：
+将本目录复制到目标机器后执行（将 `conda` 换为你的安装路径）：
 
 ```bash
-/pfs/yufei/miniconda3/bin/conda env create -f conda_env_reprompt_rl.yml
-/pfs/yufei/miniconda3/bin/conda env create -f conda_env_qwen-image.yml
-/pfs/yufei/miniconda3/bin/conda env create -f conda_env_geneval.yml
+conda env create -f conda_env_reprompt_rl.yml
+conda env create -f conda_env_qwen-image.yml
+conda env create -f conda_env_geneval.yml
 ```
 
-2) 如果目标机器 conda 不在 `/pfs/yufei/miniconda3`，需要把 yml 里的 `prefix:` 行删掉或改成目标前缀（推荐直接删掉 `prefix:`）。
+若 YAML 末尾含 **`prefix:`** 且仍指向导出者的本机路径，请在创建前 **删除该行** 或改为目标机前缀（删除更简单）。
 
-## 环境变量
+## 环境变量模板
 
-需要的运行时环境变量放在 `env.example.txt`（不包含任何密钥）。
-
+见同目录下的 **`env.example.txt`**（不含密钥）。训练与服务启动前可 `source` 一份本地副本。

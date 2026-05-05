@@ -1,43 +1,42 @@
-# scope
+# Scope
 
-`scope` 是在 `v43` 基础上演进的实验目录（原 v45），核心目标是：
+本仓库用于**可复现的文本到图像提示优化研究**：在策略梯度框架下做训练，并配合外部 **reward**、**图像生成**、**评测** 等 HTTP 服务。目录按「论文附录式代码发布」组织，便于他人克隆后替换路径与模型即可运行。
 
-- 保留 **span-FIPO** 训练主干（future-KL + span pooling）
-- 将 span 划分来源切换为 **LLM span splitter**（HTTP span server）
-- 支持本地多服务协同训练（train + image + geneval + reward）
+## 目标读者
 
-## 核心特性
+- 需要复现实验或对比方法的同行  
+- 需要清晰目录结构、环境文件与启动脚本，而不依赖内部实验代号或私有命名习惯  
 
-- **训练器**：`train.py`（基于 `v43` 的 FIPO trainer）
-- **LLM 划分 span**：通过 `SPAN_ENDPOINTS` 调用 span server
-- **fallback 策略**：当 LLM span 不可用时，自动回退到固定窗口 span，避免训练中断
-- **数据**：默认使用 `dataset/train_metadata.jsonl`
+## 功能概览
+
+- **分布式训练**：通过 `torchrun` 与 DeepSpeed（见 `configs/`）启动多卡训练。  
+- **Span 与正则化**：训练实现支持在 completion 上做 **span 级 pooling** 与 **future-KL** 类正则（具体超参由环境变量与训练脚本共同决定）。  
+- **多服务协同**：训练进程通过 HTTP 调用 reward；典型部署还包括图像生成服务、GenEval 类评分服务等（见 `docs/QUICKSTART.md`）。  
+- **可选 LLM 分段**：若你所使用的训练入口支持 HTTP span 服务，可通过 `SPAN_*` 环境变量接入；否则启动脚本中的相关变量可被忽略。  
 
 ## 目录结构
 
-- `src/`：核心训练入口（`src/train.py`）
-- `scripts/`：运行脚本与服务入口（训练、tmux、span/reward/image/geneval）
-- `configs/`：配置文件（如 deepspeed json）
-- `env/`：环境依赖与环境变量模板
-- `data/`：数据说明与数据路径约定
-- `docs/`：项目文档
-- `logs/`：训练日志输出
-- `outputs/`：模型与中间产物输出
+| 路径 | 说明 |
+|------|------|
+| `src/` | Python 入口：训练、各服务端包装或加载逻辑 |
+| `scripts/` | Shell 启动脚本（训练、tmux 等） |
+| `configs/` | 训练侧配置（如 DeepSpeed JSON） |
+| `env/` | Conda 导出、环境变量模板、精简 pip 列表 |
+| `data/` | 默认数据与示例列表（路径请用环境变量覆盖） |
+| `docs/` | 本说明与快速开始 |
+| `logs/` | 训练日志（由脚本 `tee` 写入） |
+| `outputs/` |  checkpoint 与训练输出 |
 
-## 快速开始
+## 文档索引
 
-请先看 `QUICKSTART.md`，其中包含：
+- **上手命令与依赖顺序**：[`docs/QUICKSTART.md`](QUICKSTART.md)  
+- **多 Conda 环境与导出文件说明**：[`docs/ENVIRONMENT.md`](ENVIRONMENT.md)  
+- **与 `env/` 中环境说明一致**：仓库根下 `env/ENVIRONMENT.md`、`env/env.example.txt`  
 
-1. 环境准备
-2. 服务启动顺序
-3. 最小可跑通命令
-4. 常见问题
+## 自包含与路径
 
-## 环境与依赖
+默认 `src/train.py` 可能仍指向**本机其他路径**上的完整训练脚本（便于与你现有工作区共用一份实现）。若要将本仓库单独发布到 GitHub，请将该入口改为**仓库内相对路径**或拷贝训练脚本到 `src/`，并同步修改文档中的说明。
 
-- Python 依赖清单：`env/requirements.txt`（训练环境基础依赖）
-- 环境说明：`ENVIRONMENT.md`（多环境方案：reprompt_rl / sd3-medium / geneval）
-- 环境变量模板：`env/env.example.txt`（复制后 `source` 使用）
+## 许可与引用
 
-> 注意：本项目是多服务架构，通常至少需要 3 个环境（训练、图像生成、GenEval）。  
-> 单一 `requirements.txt` 只覆盖训练侧最小依赖。
+发布前请自行添加 `LICENSE` 与论文引用信息；勿将 API 密钥、私有数据路径写入已提交的示例文件。
